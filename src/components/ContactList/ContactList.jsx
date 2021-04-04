@@ -1,4 +1,7 @@
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import actions from '../../redux/phonebook/phonebook-actions';
 
 const ContactList = ({ contacts, onDelete }) => {
   return (
@@ -19,7 +22,21 @@ const ContactList = ({ contacts, onDelete }) => {
   );
 };
 
-export default ContactList;
+const getVisibleContacts = (allContacts, filter) => {
+  const normalize = filter.toLowerCase();
+
+  return allContacts.filter(el => el.name.toLowerCase().includes(normalize));
+};
+
+const mapStateToProps = ({ contacts: { items, filter } }) => ({
+  contacts: getVisibleContacts(items, filter),
+});
+
+const mapDispatchToProps = dispatch => ({
+  onDelete: id => dispatch(actions.deleteContacts(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactList);
 
 ContactList.propTypes = {
   contacts: PropTypes.arrayOf(PropTypes.shape),
